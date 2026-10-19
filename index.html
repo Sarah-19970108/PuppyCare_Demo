@@ -405,8 +405,8 @@ function renderToday() {
   var nAmber = dogs.filter(function (d) { return vstate(d, day).level === 'amber'; }).length;
   var h = '<h2>Today ' + sampleChip() + '</h2><p class="muted">' + fmtLong(day) +
     (day !== TODAY ? ' (next open day; the daycare is closed at weekends)' : '') + '</p>' + storageWarn() + msgHtml();
-  h += '<div class="stats"><div><b>' + nIn + '/' + dogs.length + '</b><span>checked in</span></div>' +
-       '<div class="r"><b>' + nRed + '</b><span>blocked (red)</span></div><div class="a"><b>' + nAmber + '</b><span>amber</span></div></div>';
+  h += '<div class="stats"><div><b>' + nIn + '/' + dogs.length + '</b><span>Checked in</span></div>' +
+       '<div class="r"><b>' + nRed + '</b><span>Blocked (red)</span></div><div class="a"><b>' + nAmber + '</b><span>Review</span></div></div>';
   h += '<div class="row">' + [['all', 'All'], ['waiting', 'Waiting'], ['in', 'In']].map(function (f) {
     return '<button class="btn' + (ui.filter === f[0] ? ' primary' : '') + '" data-act="filter" data-f="' + f[0] + '" aria-pressed="' + (ui.filter === f[0]) + '">' + f[1] + '</button>';
   }).join('') + '</div>';
@@ -420,6 +420,7 @@ function renderToday() {
   h += '<details class="rules"><summary>Rules used in this demo</summary><ul>' +
     '<li>Amber: a vaccination expires within ' + AMBER_DAYS + ' days (including today).</li>' +
     '<li>Red: a vaccination has expired. The dog cannot be checked in until the record is updated.</li>' +
+    '<li>The Review box at the top counts the dogs with an amber vaccination, so staff can see at a glance how many records need reviewing.</li>' +
     '<li>Each note button is one tap and is stamped with the time. &ldquo;Undo last note&rdquo; removes a mistaken tap.</li>' +
     '<li>Red and amber dogs are listed first.</li></ul></details>';
   return h;

@@ -1,0 +1,602 @@
+<!doctype html>
+<html lang="en-IE">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#5b2a96">
+<title>Waggy Tails Daycare App (alpha demo)</title>
+<style>
+:root{
+  --bg:#f5f0fa; --ink:#1c2329; --muted:#5a5568; --card:#ffffff; --line:#d6cde3;
+  --brand:#5b2a96; --brand-2:#b0268a; --pink:#d6408f; --lilac:#e6d9f5;
+  --red:#b3261e; --red-bg:#fde4e1; --amber-bg:#fff0c2; --amber-line:#d99a00;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:18px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  padding-bottom:calc(92px + env(safe-area-inset-bottom));-webkit-tap-highlight-color:transparent}
+button,select,input{font:inherit;touch-action:manipulation}
+.top{background:linear-gradient(90deg,var(--brand) 0%,var(--brand-2) 55%,var(--pink) 100%);border-bottom:5px solid #ff8fc8;color:#fff;padding:12px 16px 10px;padding-top:calc(12px + env(safe-area-inset-top))}
+.brand{font-weight:800;font-size:20px;max-width:680px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.brand span{display:block;font-weight:500;font-size:14px;color:#ffd6ee}
+.pill{background:#ffd6ee;color:var(--brand);border-radius:999px;padding:4px 12px;font-size:13px;font-weight:800;letter-spacing:.05em;white-space:nowrap}
+.sample{background:#fff7d6;color:#4a3b00;border-bottom:2px dashed #c9a400;padding:8px 16px;font-size:15px}
+.sample div{max-width:680px;margin:0 auto}
+main{max-width:680px;margin:0 auto;padding:16px}
+h2{font-size:26px;margin:4px 0 10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+h3{font-size:21px;margin:0}
+p{margin:6px 0}
+.muted{color:var(--muted)}
+.small{font-size:15px}
+.center{text-align:center}
+.card{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:14px;margin:0 0 12px}
+.card.red{background:var(--red-bg);border-color:var(--red)}
+.card.amber{background:var(--amber-bg);border-color:var(--amber-line)}
+.between{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.chip{display:inline-block;padding:3px 10px;border-radius:999px;font-weight:800;font-size:14px;letter-spacing:.02em}
+.chip.red{background:var(--red);color:#fff}
+.chip.amber{background:#ffd54a;color:#3b2a00}
+.chip.ok{background:#e1f0e6;color:#14532d}
+.chip.sample-chip{background:#fff7d6;color:#4a3b00;border:1px solid #c9a400;font-size:12px}
+.vtxt{margin:8px 0}
+.btn{display:block;width:100%;min-height:60px;padding:12px 14px;font-size:20px;font-weight:700;border-radius:14px;
+  border:2px solid var(--ink);background:#fff;color:var(--ink);cursor:pointer;text-align:center}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+.btn.big{min-height:72px;font-size:22px}
+.btn.danger{background:var(--red);border-color:var(--red);color:#fff}
+.btn:disabled{background:#e6e6e6;color:#6b6b6b;border-color:#b5b5b5;cursor:not-allowed}
+.btn:active{transform:scale(.985)}
+.row{display:flex;gap:10px;margin:10px 0}
+.row>*{flex:1}
+.notes-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.note-btn{min-height:76px;font-size:22px}
+.note-btn span{display:block;font-size:26px;line-height:1.1}
+.logged{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.logged .chip{background:var(--lilac);color:var(--ink);font-size:15px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0 12px}
+.stats div{background:#fff;border:2px solid var(--line);border-radius:12px;padding:8px;text-align:center}
+.stats b{display:block;font-size:26px}
+.stats span{font-size:14px;color:var(--muted)}
+.stats .r b{color:var(--red)} .stats .a b{color:#8a5a00}
+.days{display:grid;gap:10px;margin-bottom:14px}
+.day{display:block;width:100%;text-align:left;min-height:76px;padding:10px 14px;border:2px solid var(--line);
+  border-radius:14px;background:#fff;color:inherit;cursor:pointer}
+.day[aria-pressed="true"]{border-color:var(--brand);box-shadow:0 0 0 3px var(--lilac)}
+.day.past{opacity:.6}
+.day .l1{display:flex;justify-content:space-between;gap:8px;font-weight:800}
+.day .l2{font-size:17px}
+.bar{height:12px;background:var(--lilac);border-radius:8px;overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;background:var(--pink)}
+.bar.full i{background:#1c2329}
+.day.full .l2{font-weight:800}
+.msg{border-radius:14px;padding:12px 14px;margin:10px 0;border:2px solid var(--line);background:#fff}
+.msg.ok{background:#e1f0e6;border-color:#2f7d4a}
+.msg.warn{background:var(--amber-bg);border-color:var(--amber-line)}
+.msg.err{background:var(--red-bg);border-color:var(--red)}
+.msg .btn{margin-top:10px}
+label{display:block;font-weight:700;margin-bottom:6px}
+select,input[type=date]{width:100%;min-height:58px;padding:8px 10px;font-size:20px;border:2px solid var(--ink);border-radius:12px;background:#fff;color:var(--ink)}
+.tabs{position:fixed;left:0;right:0;bottom:0;display:flex;background:#fff;border-top:2px solid var(--ink);
+  padding-bottom:env(safe-area-inset-bottom);z-index:5}
+.tabs button{flex:1;min-height:70px;font-size:19px;font-weight:800;background:#fff;border:0;border-right:1px solid var(--line);color:var(--ink);cursor:pointer}
+.tabs button:last-child{border-right:0}
+.tabs button[aria-current="page"]{background:var(--brand);color:#fff;box-shadow:inset 0 -5px 0 var(--pink)}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:10;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:#fff;width:100%;max-width:680px;border-radius:18px 18px 0 0;padding:16px;max-height:92vh;overflow:auto;padding-bottom:calc(16px + env(safe-area-inset-bottom))}
+.rules{margin:16px 0}
+.rules summary{font-weight:800;min-height:48px;padding:10px 0;cursor:pointer}
+.rules ul{margin:6px 0 0;padding-left:22px}
+.rules li{margin:4px 0}
+.owner-page{border:3px solid var(--brand)}
+.foot{margin:18px 0 6px}
+.foot p{font-size:14px;color:var(--muted)}
+.divider{height:10px}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand"><div>Waggy Tails Dog Daycare <span>Lucan, Co. Dublin &middot; staff app (alpha)</span></div><b class="pill">ALPHA</b></div>
+</header>
+<div class="sample" role="note"><div><strong>SAMPLE DATA.</strong> Every dog, owner and date in this demo is made up. Changes are saved in this browser only.</div></div>
+<main id="app"></main>
+<nav class="tabs" id="nav" aria-label="Views"></nav>
+
+<script>
+(function () {
+'use strict';
+
+/* ---------- constants ---------- */
+var CAP = 40;            // places per day
+var AMBER_DAYS = 14;     // amber if a vaccination expires within this many days
+var DAY = 86400000;
+var NOTE_TYPES = [
+  { k: 'ate',    label: 'Ate',    icon: '🍖', verb: 'ate' },
+  { k: 'walked', label: 'Walked', icon: '🦮', verb: 'went for a walk' },
+  { k: 'played', label: 'Played', icon: '🎾', verb: 'played' },
+  { k: 'napped', label: 'Napped', icon: '😴', verb: 'had a nap' }
+];
+var VACCS = [['core', 'Core booster'], ['kc', 'Kennel cough']];
+var MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+var WD = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+/* ---------- date helpers (UTC maths on YYYY-MM-DD strings, so clock changes never matter) ---------- */
+function pad(n) { return n < 10 ? '0' + n : '' + n; }
+function isoToUTC(iso) { var p = iso.split('-').map(Number); return Date.UTC(p[0], p[1] - 1, p[2]); }
+function utcToIso(t) { var d = new Date(t); return d.getUTCFullYear() + '-' + pad(d.getUTCMonth() + 1) + '-' + pad(d.getUTCDate()); }
+function addDays(iso, n) { return utcToIso(isoToUTC(iso) + n * DAY); }
+function diffDays(a, b) { return Math.round((isoToUTC(a) - isoToUTC(b)) / DAY); }
+function dow(iso) { return new Date(isoToUTC(iso)).getUTCDay(); }
+function isWeekend(iso) { var w = dow(iso); return w === 0 || w === 6; }
+function nextWorkday(iso) { while (isWeekend(iso)) iso = addDays(iso, 1); return iso; }
+function mondayOf(iso) { var w = dow(iso); return addDays(iso, w === 0 ? -6 : 1 - w); }
+function addYear(iso) { var p = iso.split('-').map(Number); return utcToIso(Date.UTC(p[0] + 1, p[1] - 1, p[2])); }
+function fmtShort(iso) { var p = iso.split('-'); return (+p[2]) + ' ' + MONTHS[+p[1] - 1]; }
+function fmtLong(iso) { return WD[dow(iso)] + ' ' + fmtShort(iso); }
+function localToday() { var n = new Date(); return n.getFullYear() + '-' + pad(n.getMonth() + 1) + '-' + pad(n.getDate()); }
+function nowTime() { var d = new Date(); return pad(d.getHours()) + ':' + pad(d.getMinutes()); }
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
+}
+
+/* ---------- "today" (a ?today=YYYY-MM-DD address is only for testing other days) ---------- */
+var override = (new URLSearchParams(location.search).get('today') || '');
+if (!/^\d{4}-\d{2}-\d{2}$/.test(override)) override = '';
+var TODAY = override || localToday();
+var VIEWDAY = nextWorkday(TODAY);   // the daycare is open Monday to Friday
+var KEY = 'waggy-tails-demo-v1' + (override ? '-test-' + override : '');
+
+/* ---------- sample data ---------- */
+var DOG_NAMES = ['Biscuit','Mochi','Poppy','Bailey','Cooper','Luna','Murphy','Rosie','Archie','Daisy','Finn','Maggie',
+  'Teddy','Willow','Rex','Ruby','Alfie','Hazel','Milo','Pepper','Bruno','Nala','Oscar','Coco','Ziggy','Lola','Harvey',
+  'Ginger','Buddy','Penny','Rusty','Maisie','Toby','Skye','Jasper','Pippa','Barney','Cleo','Tilly','Marley','Winston',
+  'Nellie','Dexter','Bonnie'];
+var OWNER_NAMES = ['Aoife','Ciarán','Niamh','Seán','Orla','Cian','Saoirse','Declan','Róisín','Eoin','Clodagh',
+  'Fionn','Gráinne','Darragh','Máiréad','Conor','Sinéad','Pádraig','Ailbhe','Ronan','Deirdre','Colm',
+  'Eimear','Tadhg','Nuala','Oisín','Bronagh','Cathal','Sorcha','Donal','Áine','Lorcan','Maeve','Fergal','Una',
+  'Rory','Tara','Éamon','Blathnáid','Killian','Muireann','Brendan','Ita'];
+
+// regular weekly days (1=Mon ... 5=Fri) for each dog: Monday full, Friday nearly full, Wednesday quiet
+function pattern(i) {
+  var p = [];
+  if (i < 40) p.push(1);
+  if (i >= 1 && i < 40) p.push(5);
+  if (i < 40 && i % 10 < 7) p.push(2);
+  if (i % 5 === 0 || i % 5 === 2) p.push(3);
+  if (i % 3 !== 0) p.push(4);
+  return p;
+}
+
+function seed(realToday) {
+  var T = nextWorkday(realToday);
+  var owners = [], dogs = [], oi = -1, i;
+  for (i = 0; i < DOG_NAMES.length; i++) {
+    if (i !== 11) { oi++; owners.push({ id: 'o' + oi, name: OWNER_NAMES[oi] }); }   // Finn and Maggie share an owner
+    dogs.push({
+      id: 'd' + i, name: DOG_NAMES[i], ownerId: 'o' + oi,
+      vacc: { core: addDays(T, 150 + (i * 7) % 120), kc: addDays(T, 70 + (i * 11) % 140) }
+    });
+  }
+  var bookings = {}, mon = mondayOf(T), w, wd, date, list;
+  for (w = 0; w < 4; w++) {
+    for (wd = 1; wd <= 5; wd++) {
+      date = addDays(mon, w * 7 + wd - 1); list = [];
+      for (i = 0; i < dogs.length; i++) if (pattern(i).indexOf(wd) > -1) list.push('d' + i);
+      bookings[date] = list;
+    }
+  }
+  // make sure the rules show up on the first day anyone opens the demo
+  function dg(id) { return dogs[+id.slice(1)]; }
+  var tl = (bookings[T] || []).filter(function (id) { return +id.slice(1) < 40; });
+  if (tl[0]) dg(tl[0]).vacc.kc = addDays(T, -3);     // red: expired 3 days ago
+  if (tl[1]) dg(tl[1]).vacc.kc = addDays(T, 5);      // amber: 5 days left
+  if (tl[2]) dg(tl[2]).vacc.core = addDays(T, 14);   // amber: exactly 14 days left
+  if (tl[3]) dg(tl[3]).vacc.core = addDays(T, -1);   // red: expired yesterday
+  if (tl[4]) dg(tl[4]).vacc.kc = addDays(T, 0);      // amber: expires today
+  if (tl[5]) dg(tl[5]).vacc.core = addDays(T, 10);   // amber: 10 days left
+  dogs[41].vacc.kc = addDays(T, -10);                // red, and not on Monday: tests the booking block
+  dogs[42].vacc.kc = addDays(T, 9);                  // amber
+  var checkins = {}, notes = {}, sel = '';
+  if (T === realToday && tl.length > 8) {            // a few dogs already in, with notes
+    checkins[T] = {}; notes[T] = {};
+    checkins[T][tl[6]] = '07:58'; notes[T][tl[6]] = [{ k: 'ate', t: '09:15' }, { k: 'walked', t: '10:30' }];
+    checkins[T][tl[7]] = '08:10'; notes[T][tl[7]] = [{ k: 'played', t: '09:40' }];
+    checkins[T][tl[8]] = '08:22'; notes[T][tl[8]] = [{ k: 'napped', t: '11:05' }];
+    sel = dg(tl[6]).ownerId;
+  }
+  return { v: 1, seededOn: realToday, owners: owners, dogs: dogs, bookings: bookings,
+           checkins: checkins, notes: notes, ownerSel: sel };
+}
+
+/* ---------- saving (browser storage) ---------- */
+var storageOK = true;
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(state)); storageOK = true; } catch (e) { storageOK = false; }
+}
+function load() {
+  try {
+    var raw = localStorage.getItem(KEY);
+    if (raw) {
+      var s = JSON.parse(raw);
+      if (s && s.v === 1 && s.dogs && s.owners && s.bookings && Math.abs(diffDays(TODAY, s.seededOn)) <= 10) return s;
+    }
+  } catch (e) { storageOK = false; }
+  var fresh = seed(TODAY);
+  try { localStorage.setItem(KEY, JSON.stringify(fresh)); } catch (e2) { storageOK = false; }
+  return fresh;
+}
+var state = load();
+
+/* ---------- lookups and rules ---------- */
+function dogById(id) { for (var i = 0; i < state.dogs.length; i++) if (state.dogs[i].id === id) return state.dogs[i]; return null; }
+function ownerById(id) { for (var i = 0; i < state.owners.length; i++) if (state.owners[i].id === id) return state.owners[i]; return null; }
+function bookedOn(day) { return state.bookings[day] || []; }
+function placesLeft(day) { return CAP - bookedOn(day).length; }
+function byName(a, b) { return a.name < b.name ? -1 : a.name > b.name ? 1 : 0; }
+
+// vaccination state of a dog on a given day: red = expired on that day, amber = expires within 14 days
+function vstate(dog, day) {
+  var items = [], worst = 'ok';
+  VACCS.forEach(function (p) {
+    var exp = dog.vacc[p[0]], left = diffDays(exp, day), t;
+    if (left < 0) {
+      t = p[1] + (exp < TODAY ? ' expired ' + fmtShort(exp) : ' runs out ' + fmtShort(exp) + ', before this day');
+      items.push({ level: 'red', text: t }); worst = 'red';
+    } else if (left <= AMBER_DAYS) {
+      t = p[1] + ' expires ' + fmtShort(exp);
+      if (day === TODAY) t += left === 0 ? ' (today)' : ' (in ' + left + ' day' + (left === 1 ? '' : 's') + ')';
+      items.push({ level: 'amber', text: t }); if (worst !== 'red') worst = 'amber';
+    }
+  });
+  return { level: worst, items: items };
+}
+function vtext(v) { return v.items.map(function (x) { return x.text; }).join('; '); }
+function rank(level) { return level === 'red' ? 0 : level === 'amber' ? 1 : 2; }
+
+function bookingCheck(dogId, day) {
+  var dog = dogById(dogId);
+  if (day < TODAY) return { ok: false, reason: 'past' };
+  if (bookedOn(day).indexOf(dogId) > -1) return { ok: false, reason: 'already' };
+  var v = vstate(dog, day);
+  if (v.level === 'red') return { ok: false, reason: 'vacc', v: v };
+  if (placesLeft(day) <= 0) return { ok: false, reason: 'full', alt: nearestDay(dog, day) };
+  return { ok: true };
+}
+// nearest open weekday with room where this dog is not already booked and its vaccinations are in date
+function nearestDay(dog, day) {
+  var off, s, d;
+  for (off = 1; off <= 42; off++) {
+    for (s = -1; s <= 1; s += 2) {
+      d = addDays(day, s * off);
+      if (d < TODAY || isWeekend(d)) continue;
+      if (bookedOn(d).indexOf(dog.id) > -1) continue;
+      if (placesLeft(d) > 0 && vstate(dog, d).level !== 'red') return d;
+    }
+  }
+  return null;
+}
+
+/* ---------- ui state ---------- */
+var ui = { view: 'today', weekStart: mondayOf(VIEWDAY), day: VIEWDAY, filter: 'all', msg: null,
+           selDog: '', arm: null, vaccDog: null, vaccErr: '', top: false };
+
+function isArmed(key) { return ui.arm && ui.arm.key === key && Date.now() - ui.arm.ts < 4000; }
+function twice(key) {
+  if (isArmed(key)) { ui.arm = null; return true; }
+  ui.arm = { key: key, ts: Date.now() };
+  setTimeout(function () { if (ui.arm && Date.now() - ui.arm.ts >= 4000) { ui.arm = null; render(); } }, 4100);
+  return false;
+}
+
+/* ---------- views ---------- */
+function sampleChip() { return '<span class="chip sample-chip">SAMPLE DATA</span>'; }
+function msgHtml() {
+  if (!ui.msg) return '';
+  var m = ui.msg, h = '<div class="msg ' + m.type + '" role="status">' + esc(m.text);
+  if (m.alt) h += '<button class="btn primary" data-act="bookalt" data-dog="' + m.alt.dog + '" data-day="' + m.alt.day + '">Book ' + esc(dogById(m.alt.dog).name) + ' on ' + fmtLong(m.alt.day) + ' instead</button>';
+  if (m.vaccDog) h += '<button class="btn" data-act="vacc" data-dog="' + m.vaccDog + '">Update vaccination</button>';
+  return h + '</div>';
+}
+function storageWarn() {
+  return storageOK ? '' : '<div class="msg err">Saving is switched off in this browser, so changes will be lost when you refresh.</div>';
+}
+
+function dayCard(d) {
+  var left = placesLeft(d), booked = CAP - left, full = left <= 0;
+  var cls = 'day' + (d < TODAY ? ' past' : '') + (full ? ' full' : '');
+  return '<button class="' + cls + '" data-act="pickday" data-day="' + d + '" aria-pressed="' + (ui.day === d) + '">' +
+    '<div class="l1"><span>' + fmtLong(d) + (d === TODAY ? ' (today)' : '') + '</span><span>' + (full ? 'FULL' : left + ' left') + '</span></div>' +
+    '<div class="l2">' + (full ? 'No places left' : left + ' place' + (left === 1 ? '' : 's') + ' left') + ' &middot; ' + booked + ' of ' + CAP + ' booked</div>' +
+    '<div class="bar' + (full ? ' full' : '') + '"><i style="width:' + Math.round(booked / CAP * 100) + '%"></i></div></button>';
+}
+
+function bookingRow(id, day) {
+  var dog = dogById(id), v = vstate(dog, day), owner = ownerById(dog.ownerId);
+  var cls = v.level === 'ok' ? '' : v.level;
+  var checked = (state.checkins[day] || {})[id];
+  var h = '<div class="card ' + cls + '"><div class="between"><strong>' + esc(dog.name) + '</strong><span class="muted">' + esc(owner.name) + '</span></div>';
+  if (v.level !== 'ok') h += '<div class="vtxt"><span class="chip ' + v.level + '">' + (v.level === 'red' ? 'OUT OF DATE' : 'EXPIRES SOON') + '</span> ' + esc(vtext(v)) + '</div>';
+  if (checked) h += '<p class="muted">Checked in at ' + checked + '</p>';
+  if (day >= TODAY) {
+    h += '<div class="row">';
+    if (v.level !== 'ok') h += '<button class="btn" data-act="vacc" data-dog="' + id + '">Update vaccination</button>';
+    if (!checked) {
+      var key = 'cancel:' + id + ':' + day, armed = isArmed(key);
+      h += '<button class="btn' + (armed ? ' danger' : '') + '" data-act="cancel" data-dog="' + id + '">' + (armed ? 'Tap again to cancel' : 'Cancel booking') + '</button>';
+    }
+    h += '</div>';
+  }
+  return h + '</div>';
+}
+
+function renderBookings() {
+  var days = [0, 1, 2, 3, 4].map(function (k) { return addDays(ui.weekStart, k); });
+  var minWeek = mondayOf(VIEWDAY), maxWeek = addDays(minWeek, 56);
+  var h = '<h2>Bookings ' + sampleChip() + '</h2>' + storageWarn();
+  h += '<div class="row"><button class="btn" data-act="week" data-d="-1"' + (ui.weekStart <= minWeek ? ' disabled' : '') + '>&larr; Earlier week</button>' +
+       '<button class="btn" data-act="week" data-d="1"' + (ui.weekStart >= maxWeek ? ' disabled' : '') + '>Later week &rarr;</button></div>';
+  h += '<p class="muted center">' + fmtLong(days[0]) + ' to ' + fmtLong(days[4]) + '</p>';
+  h += '<div class="days">' + days.map(dayCard).join('') + '</div>';
+
+  var day = ui.day, ids = bookedOn(day).slice(), left = placesLeft(day);
+  h += '<h3>' + fmtLong(day) + '</h3><p>' + (CAP - left) + ' of ' + CAP + ' booked &middot; <strong>' + (left <= 0 ? 'FULL' : left + ' places left') + '</strong></p>';
+  if (day >= TODAY) {
+    var avail = state.dogs.filter(function (d) { return ids.indexOf(d.id) < 0; }).sort(byName);
+    h += '<div class="card"><label for="dogsel">Book a dog on ' + fmtLong(day) + '</label><select id="dogsel" data-sel="dog"><option value="">Choose a dog&hellip;</option>' +
+      avail.map(function (d) {
+        return '<option value="' + d.id + '"' + (ui.selDog === d.id ? ' selected' : '') + '>' + esc(d.name) + ' (' + esc(ownerById(d.ownerId).name) + ')</option>';
+      }).join('') + '</select><div class="divider"></div><button class="btn primary" data-act="book">Book on ' + fmtLong(day) + '</button></div>';
+  } else {
+    h += '<p class="muted">This day has passed, so it is read-only.</p>';
+  }
+  h += msgHtml();
+  ids.sort(function (a, b) {
+    var da = dogById(a), db = dogById(b), ra = rank(vstate(da, day).level), rb = rank(vstate(db, day).level);
+    return ra !== rb ? ra - rb : byName(da, db);
+  });
+  h += '<h3>Booked on ' + fmtLong(day) + '</h3><div class="divider"></div>';
+  h += ids.length ? ids.map(function (id) { return bookingRow(id, day); }).join('') : '<p class="muted">No dogs booked yet.</p>';
+  h += '<details class="rules"><summary>Rules used in this demo</summary><ul>' +
+    '<li>The daycare is open Monday to Friday (assumption).</li>' +
+    '<li>' + CAP + ' places a day. One dog takes one place.</li>' +
+    '<li>A dog can be booked only if the day has room and every vaccination is in date on that day (valid up to and including its expiry date).</li>' +
+    '<li>If a day is full, the app offers the nearest day with room where that dog&rsquo;s vaccinations are still in date.</li>' +
+    '<li>Bookings made earlier are kept even if a vaccination later runs out. They show as out of date so staff can fix them.</li></ul></details>';
+  return h;
+}
+
+function dogCard(dog, day) {
+  var v = vstate(dog, day), owner = ownerById(dog.ownerId), inT = (state.checkins[day] || {})[dog.id];
+  var cls = v.level === 'ok' ? '' : v.level;
+  var h = '<article class="card ' + cls + '"><div class="between"><h3>' + esc(dog.name) + '</h3><span class="muted">' + esc(owner.name) + '</span></div>';
+  if (v.level === 'red') h += '<div class="vtxt"><span class="chip red">BLOCKED</span> ' + esc(vtext(v)) + '</div>';
+  else if (v.level === 'amber') h += '<div class="vtxt"><span class="chip amber">EXPIRES SOON</span> ' + esc(vtext(v)) + '</div>';
+  else h += '<div class="vtxt"><span class="chip ok">Vaccinations in date</span></div>';
+
+  if (inT) {
+    var notes = (state.notes[day] || {})[dog.id] || [];
+    h += '<p><strong>&#10003; Checked in at ' + inT + '</strong></p><div class="notes-grid">' +
+      NOTE_TYPES.map(function (n) {
+        return '<button class="btn note-btn" data-act="note" data-dog="' + dog.id + '" data-k="' + n.k + '"><span>' + n.icon + '</span>' + n.label + '</button>';
+      }).join('') + '</div>';
+    if (notes.length) {
+      h += '<div class="logged">' + notes.map(function (n) {
+        var t = NOTE_TYPES.filter(function (x) { return x.k === n.k; })[0];
+        return '<span class="chip">' + t.label + ' ' + n.t + '</span>';
+      }).join('') + '</div><button class="btn" data-act="undo" data-dog="' + dog.id + '">Undo last note</button>';
+    }
+  } else if (v.level === 'red') {
+    h += '<p><strong>Cannot be checked in.</strong> Ask the owner for the vet record, then update it.</p>' +
+         '<div class="row"><button class="btn" disabled aria-disabled="true">Check in (blocked)</button>' +
+         '<button class="btn" data-act="vacc" data-dog="' + dog.id + '">Update vaccination</button></div>';
+  } else {
+    h += '<button class="btn primary big" data-act="checkin" data-dog="' + dog.id + '">Check in</button>';
+  }
+  return h + '</article>';
+}
+
+function renderToday() {
+  var day = VIEWDAY, ids = bookedOn(day), map = state.checkins[day] || {};
+  var dogs = ids.map(dogById);
+  var nIn = dogs.filter(function (d) { return map[d.id]; }).length;
+  var nRed = dogs.filter(function (d) { return vstate(d, day).level === 'red'; }).length;
+  var nAmber = dogs.filter(function (d) { return vstate(d, day).level === 'amber'; }).length;
+  var h = '<h2>Today ' + sampleChip() + '</h2><p class="muted">' + fmtLong(day) +
+    (day !== TODAY ? ' (next open day; the daycare is closed at weekends)' : '') + '</p>' + storageWarn() + msgHtml();
+  h += '<div class="stats"><div><b>' + nIn + '/' + dogs.length + '</b><span>checked in</span></div>' +
+       '<div class="r"><b>' + nRed + '</b><span>blocked (red)</span></div><div class="a"><b>' + nAmber + '</b><span>amber</span></div></div>';
+  h += '<div class="row">' + [['all', 'All'], ['waiting', 'Waiting'], ['in', 'In']].map(function (f) {
+    return '<button class="btn' + (ui.filter === f[0] ? ' primary' : '') + '" data-act="filter" data-f="' + f[0] + '" aria-pressed="' + (ui.filter === f[0]) + '">' + f[1] + '</button>';
+  }).join('') + '</div>';
+  var shown = dogs.filter(function (d) {
+    return ui.filter === 'all' || (ui.filter === 'in' ? !!map[d.id] : !map[d.id]);
+  }).sort(function (a, b) {
+    var ra = rank(vstate(a, day).level), rb = rank(vstate(b, day).level);
+    return ra !== rb ? ra - rb : byName(a, b);
+  });
+  h += shown.length ? shown.map(function (d) { return dogCard(d, day); }).join('') : '<p class="muted center">No dogs to show here.</p>';
+  h += '<details class="rules"><summary>Rules used in this demo</summary><ul>' +
+    '<li>Amber: a vaccination expires within ' + AMBER_DAYS + ' days (including today).</li>' +
+    '<li>Red: a vaccination has expired. The dog cannot be checked in until the record is updated.</li>' +
+    '<li>Each note button is one tap and is stamped with the time. &ldquo;Undo last note&rdquo; removes a mistaken tap.</li>' +
+    '<li>Red and amber dogs are listed first.</li></ul></details>';
+  return h;
+}
+
+function defaultOwner() {
+  var map = state.checkins[VIEWDAY] || {}, k;
+  for (k in map) { var d = dogById(k); if (d) return d.ownerId; }
+  return state.owners.slice().sort(byName)[0].id;
+}
+function renderPupdate() {
+  var day = VIEWDAY;
+  if (!state.ownerSel || !ownerById(state.ownerSel)) state.ownerSel = defaultOwner();
+  var owner = ownerById(state.ownerSel);
+  var h = '<h2>Pupdate ' + sampleChip() + '</h2>' + storageWarn();
+  h += '<div class="card"><label for="ownersel">Demo switcher <span class="muted">(staff and demo only; owners would not see this)</span></label>' +
+    '<select id="ownersel" data-sel="owner">' + state.owners.slice().sort(byName).map(function (o) {
+      return '<option value="' + o.id + '"' + (o.id === owner.id ? ' selected' : '') + '>' + esc(o.name) + '</option>';
+    }).join('') + '</select><p class="muted small">In the demo you pick which owner you are pretending to be. A private page for each owner is not built yet.</p></div>';
+
+  h += '<section class="card owner-page" aria-label="Owner page"><h3>Hi ' + esc(owner.name) + '</h3><p class="muted">' + fmtLong(day) + '</p>';
+  var mine = state.dogs.filter(function (d) { return d.ownerId === owner.id; });
+  mine.forEach(function (dog) {
+    var booked = bookedOn(day).indexOf(dog.id) > -1, inT = (state.checkins[day] || {})[dog.id];
+    var notes = (state.notes[day] || {})[dog.id] || [];
+    h += '<div class="card"><h3>' + esc(dog.name) + '</h3>';
+    if (!booked) h += '<p>' + esc(dog.name) + ' is not booked in on ' + fmtLong(day) + '.</p>';
+    else if (!inT && vstate(dog, day).level === 'red') h += '<p>' + esc(dog.name) + ' could not be checked in today because a vaccination is out of date. Please contact the daycare.</p>';
+    else if (!inT) h += '<p>' + esc(dog.name) + ' has not been checked in yet.</p>';
+    else {
+      h += '<p><strong>' + esc(dog.name) + ' checked in at ' + inT + '.</strong></p>';
+      if (!notes.length) h += '<p class="muted">No updates yet today.</p>';
+      else h += '<ul>' + notes.map(function (n) {
+        var t = NOTE_TYPES.filter(function (x) { return x.k === n.k; })[0];
+        return '<li><strong>' + n.t + '</strong> &mdash; ' + esc(dog.name) + ' ' + t.verb + '</li>';
+      }).join('') + '</ul>';
+    }
+    h += '</div>';
+  });
+  h += '<p class="muted small">This page shows what staff have logged in this browser. There are no push notifications or messages to owners&rsquo; phones in this alpha.</p></section>';
+  h += '<details class="rules"><summary>Rules used in this demo</summary><ul>' +
+    '<li>An owner sees only their own dog&rsquo;s check-in and notes for the day, nothing about any other dog or owner.</li>' +
+    '<li>Notes appear when staff tap them on the Today screen.</li></ul></details>';
+  return h;
+}
+
+function vaccSheet() {
+  var dog = dogById(ui.vaccDog);
+  var h = '<div class="overlay"><div class="sheet" role="dialog" aria-modal="true" aria-label="Update vaccination"><h3>Update vaccination: ' + esc(dog.name) + '</h3>' +
+    '<p class="muted">Enter the new expiry date from the vet record.</p>';
+  VACCS.forEach(function (p) {
+    h += '<div class="card"><label for="v-' + p[0] + '">' + p[1] + ' expires</label><input type="date" id="v-' + p[0] + '" value="' + dog.vacc[p[0]] + '">' +
+         '<div class="divider"></div><button class="btn" data-act="renew" data-f="' + p[0] + '">Renewed today (12 months from today)</button></div>';
+  });
+  if (ui.vaccErr) h += '<div class="msg err">' + esc(ui.vaccErr) + '</div>';
+  h += '<div class="row"><button class="btn" data-act="vaccx">Cancel</button><button class="btn primary" data-act="vaccsave">Save</button></div></div></div>';
+  return h;
+}
+
+function footer() {
+  var armed = isArmed('reset');
+  return '<div class="foot"><button class="btn' + (armed ? ' danger' : '') + '" data-act="reset">' + (armed ? 'Tap again to reset' : 'Reset sample data') + '</button>' +
+    '<p>Alpha demo. Sample data only. Not for real dogs, owners or records.</p></div>';
+}
+
+var els = { app: document.getElementById('app'), nav: document.getElementById('nav') };
+function render() {
+  var y = window.scrollY, h;
+  if (ui.view === 'bookings') h = renderBookings();
+  else if (ui.view === 'pupdate') h = renderPupdate();
+  else h = renderToday();
+  h += footer();
+  if (ui.vaccDog) h += vaccSheet();
+  els.app.innerHTML = h;
+  els.nav.innerHTML = [['bookings', 'Bookings'], ['today', 'Today'], ['pupdate', 'Pupdate']].map(function (t) {
+    return '<button data-act="tab" data-view="' + t[0] + '"' + (ui.view === t[0] ? ' aria-current="page"' : '') + '>' + t[1] + '</button>';
+  }).join('');
+  window.scrollTo(0, ui.top ? 0 : y);
+  ui.top = false;
+}
+
+/* ---------- actions ---------- */
+function doBook(dogId, day) {
+  var dog = dogById(dogId), chk = bookingCheck(dogId, day), v;
+  if (chk.ok) {
+    (state.bookings[day] = state.bookings[day] || []).push(dogId);
+    ui.selDog = ''; ui.day = day; ui.weekStart = mondayOf(day);
+    ui.msg = { type: 'ok', text: dog.name + ' is booked in on ' + fmtLong(day) + '. ' + placesLeft(day) + ' place' + (placesLeft(day) === 1 ? '' : 's') + ' left.' };
+    save();
+  } else if (chk.reason === 'vacc') {
+    ui.msg = { type: 'err', text: 'Cannot book ' + dog.name + ' on ' + fmtLong(day) + ': ' + vtext(chk.v) + '. Update the vaccination record first.', vaccDog: dogId };
+  } else if (chk.reason === 'full') {
+    if (chk.alt) ui.msg = { type: 'warn', text: fmtLong(day) + ' is full (' + CAP + ' of ' + CAP + '). Nearest day with room: ' + fmtLong(chk.alt) + ' (' + placesLeft(chk.alt) + ' places left).', alt: { dog: dogId, day: chk.alt } };
+    else ui.msg = { type: 'warn', text: fmtLong(day) + ' is full and no other day with room was found in the next six weeks.' };
+  } else if (chk.reason === 'already') {
+    ui.msg = { type: 'warn', text: dog.name + ' is already booked on ' + fmtLong(day) + '.' };
+  } else {
+    ui.msg = { type: 'warn', text: 'That day has passed.' };
+  }
+}
+
+document.addEventListener('click', function (e) {
+  var b = e.target.closest ? e.target.closest('[data-act]') : null;
+  if (!b || b.disabled) return;
+  var a = b.getAttribute('data-act'), id = b.getAttribute('data-dog'), d, day, arr, inp;
+  switch (a) {
+    case 'tab':
+      ui.view = b.getAttribute('data-view'); ui.msg = null; ui.top = true; break;
+    case 'week':
+      ui.weekStart = addDays(ui.weekStart, 7 * Number(b.getAttribute('data-d')));
+      ui.day = (mondayOf(VIEWDAY) === ui.weekStart) ? VIEWDAY : ui.weekStart; ui.msg = null; break;
+    case 'pickday':
+      ui.day = b.getAttribute('data-day'); ui.msg = null; ui.selDog = ''; break;
+    case 'book':
+      if (!ui.selDog) ui.msg = { type: 'warn', text: 'Choose a dog first.' };
+      else doBook(ui.selDog, ui.day);
+      break;
+    case 'bookalt':
+      doBook(id, b.getAttribute('data-day')); break;
+    case 'cancel':
+      if (!twice('cancel:' + id + ':' + ui.day)) break;
+      if ((state.checkins[ui.day] || {})[id]) break;
+      arr = bookedOn(ui.day); arr.splice(arr.indexOf(id), 1);
+      ui.msg = { type: 'ok', text: 'Cancelled ' + dogById(id).name + ' on ' + fmtLong(ui.day) + '. ' + placesLeft(ui.day) + ' places left.' };
+      save(); break;
+    case 'filter':
+      ui.filter = b.getAttribute('data-f'); break;
+    case 'checkin':
+      d = VIEWDAY;
+      if (bookedOn(d).indexOf(id) < 0) break;
+      if (vstate(dogById(id), d).level === 'red') { ui.msg = { type: 'err', text: dogById(id).name + ' cannot be checked in: vaccination out of date.' }; break; }
+      state.checkins[d] = state.checkins[d] || {};
+      if (!state.checkins[d][id]) state.checkins[d][id] = nowTime();
+      ui.msg = null; save(); break;
+    case 'note':
+      d = VIEWDAY;
+      if (!(state.checkins[d] || {})[id]) break;
+      state.notes[d] = state.notes[d] || {}; state.notes[d][id] = state.notes[d][id] || [];
+      state.notes[d][id].push({ k: b.getAttribute('data-k'), t: nowTime() }); save(); break;
+    case 'undo':
+      arr = ((state.notes[VIEWDAY] || {})[id]) || [];
+      arr.pop(); save(); break;
+    case 'vacc':
+      ui.vaccDog = id; ui.vaccErr = ''; break;
+    case 'vaccx':
+      ui.vaccDog = null; break;
+    case 'renew':
+      inp = document.getElementById('v-' + b.getAttribute('data-f'));
+      if (inp) inp.value = addYear(TODAY);
+      return;
+    case 'vaccsave':
+      var vals = {}, ok = true;
+      VACCS.forEach(function (p) {
+        var el = document.getElementById('v-' + p[0]);
+        vals[p[0]] = el ? el.value : '';
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(vals[p[0]])) ok = false;
+      });
+      if (!ok) { ui.vaccErr = 'Enter both dates.'; break; }
+      dogById(ui.vaccDog).vacc = vals;
+      ui.msg = { type: 'ok', text: 'Updated vaccination dates for ' + dogById(ui.vaccDog).name + '.' };
+      ui.vaccDog = null; ui.vaccErr = ''; save(); break;
+    case 'reset':
+      if (!twice('reset')) break;
+      state = seed(TODAY); save();
+      ui.msg = null; ui.selDog = ''; ui.day = VIEWDAY; ui.weekStart = mondayOf(VIEWDAY); break;
+  }
+  render();
+});
+
+document.addEventListener('change', function (e) {
+  var t = e.target, s = t.getAttribute && t.getAttribute('data-sel');
+  if (s === 'dog') ui.selDog = t.value;
+  else if (s === 'owner') { state.ownerSel = t.value; save(); render(); }
+});
+
+render();
+})();
+</script>
+</body>
+</html>
